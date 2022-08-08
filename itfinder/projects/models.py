@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import Profile
 import uuid
+from django.utils.text import slugify
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
@@ -9,7 +10,12 @@ class Tag(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
  
     def __str__(self):
-        return self.name	
+        return self.name
+
+    def save(self, *args, **kwargs):
+        value = self.name
+        self.slug = slugify(value, allow_unicode=True)
+        super().save(*args, **kwargs)	
   
 class Project(models.Model):
      title = models.CharField(max_length=100)
