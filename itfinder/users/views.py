@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.urls import conf
 from .models import Profile, Skill
 from .forms import *
+from .utils import paginateProfiles, searchProfiles
 
 
 
@@ -67,8 +68,10 @@ def registerUser(request):
     return render(request, 'users/login_register.html', context)
 
 def profiles(request):
-    profiles = Profile.objects.all()
-    context = {'profiles': profiles}
+    profiles, search_query = searchProfiles(request)
+    custom_range, profiles = paginateProfiles(request, profiles, 6)
+    context = {'profiles': profiles, 'search_query': search_query,
+               'custom_range': custom_range}
     return render(request, 'users/profiles.html', context)
 
 
@@ -165,8 +168,6 @@ def deleteSkill(request, skill_slug):
 
     context = {'object': skill}
     return render(request, 'delete_template.html', context)
-
-
 
 
 @login_required(login_url='login')
